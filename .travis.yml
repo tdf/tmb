@@ -7,5 +7,5 @@ python:
 install:
   - pip install -r test_requirements.txt
   - pip install .
-script: py.test --cov=tmb --pep8=tmb -v --cov=tmb --cov-report term-missing tests/
+script: py.test -v --pep8 --cov=tmb --cov-report term-missing tests/
 after_success: coveralls
