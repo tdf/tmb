@@ -8,4 +8,4 @@ install:
   - pip install -r test_requirements.txt
   - pip install .
 script: py.test -v --pep8 --cov=tmb --cov-report term-missing tests/
-after_success: coveralls
+after_script: coveralls
