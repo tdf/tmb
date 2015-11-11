@@ -39,7 +39,7 @@ class ActiveChat(metaclass=MetaChat):
         elif self.state == "unregister":
             if message == "confirm":
                 if str(self.chatid) in config['registered']:
-                    config.remove_option("registered", str(self.chat.id))
+                    config.remove_option("registered", str(self.chatid))
                     writeconfig()
                     self.msg("You are now unsubscribed.")
                     self.state = "start"

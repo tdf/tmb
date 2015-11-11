@@ -1,9 +1,11 @@
 import pytest
 
+
 def test_init(activechat, testbot):
     a = activechat(0, testbot)
     assert a.chatid == 0
     assert a.state == "start"
+
 
 def test_command_register(activechat, testbot):
     a = activechat(1, testbot)
@@ -18,11 +20,23 @@ def test_command_register(activechat, testbot):
     assert testbot.lastmessage == "You are now registered."
     assert a.state == "start"
 
+
 def test_command_unregister(activechat, testbot):
     a = activechat(2, testbot)
     assert a.state == "start"
     a.parseMessage("/unregister")
     assert a.state == "unregister"
+    assert testbot.lastmessage == "Please write 'confirm' to continue unsubscription."
+    a.parseMessage("confirm")
+    assert a.state == "start"
+    assert testbot.lastmessage == "You are not registered."
+    a.parseMessage("/register")
+    a.parseMessage("password")
+    a.parseMessage("/unregister")
+    a.parseMessage("confirm")
+    assert a.state == "start"
+    assert testbot.lastmessage == "You are now unsubscribed."
+
 
 def test_command_cancel(activechat, testbot):
     a = activechat(3, testbot)
