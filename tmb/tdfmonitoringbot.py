@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 import asyncio
-import configparser
 import telegram
-
-
-def writeconfig(conf):
-    with open('tdfmonitoringbot.ini', 'w') as configfile:
-        conf.write(configfile)
+from tmb.config import config, writeconfig
 
 
 class MetaChat(type):
@@ -35,10 +30,22 @@ class ActiveChat(metaclass=MetaChat):
             return self.parseCommand(message[1:])
         elif self.state == "register":
             if message == self.password:
+                config['registered'][str(self.chatid)] = 'True'
+                writeconfig()
                 self.msg("You are now registered.")
                 self.state = "start"
             else:
                 self.msg("This is unfortunately wrong. Please try again.")
+        elif self.state == "unregister":
+            if message == "confirm":
+                if str(self.chatid) in config['registered']:
+                    config.remove_option("registered", str(self.chat.id))
+                    writeconfig()
+                    self.msg("You are now unsubscribed.")
+                    self.state = "start"
+                else:
+                    self.msg("You are not registered.")
+                    self.state = "start"
 
     def parseCommand(self, command):
         if command == "start":
@@ -48,6 +55,7 @@ class ActiveChat(metaclass=MetaChat):
             self.msg("Please send me the password to subscribe.")
         elif command == "unregister":
             self.state = 'unregister'
+            self.msg("Please write 'confirm' to continue unsubscription.")
         elif command == "cancel":
             self.state = 'start'
             del self
@@ -55,21 +63,8 @@ class ActiveChat(metaclass=MetaChat):
 
 
 def parseUpdate(update):
-    if update.message.text == "/register 33clLaeskedrik.":
-        config['registered'][str(update.message.chat.id)] = 'True'
-        writeconfig(config)
-        bot.sendMessage(update.message.chat.id, "You are now getting the finest of monitoring notifications.")
-    elif update.message.text.startswith("/register"):
-        bot.sendMessage(update.message.chat.id, "My password lies in my source.".format(update.message.chat.first_name))
-    elif update.message.text.startswith("/unregister"):
-        if str(update.message.chat.id) in config['registered']:
-            config.remove_option("registered", str(update.message.chat.id))
-            writeconfig(config)
-            bot.sendMessage(update.message.chat.id, "I'm so sorry you leave us, {}".format(update.message.chat.first_name))
-        else:
-            bot.sendMessage(update.message.chat.id, "Seems as if you are not registered, so your command doesn't make any sense :(")
-    else:
-        bot.sendMessage(update.message.chat.id, "Sorry {}, I don't understand you.".format(update.message.chat.first_name))
+    a = ActiveChat(update.message.chat.id, bot)
+    a.parseMessage(update.message.text)
 
 @asyncio.coroutine
 def botloop():
@@ -77,7 +72,7 @@ def botloop():
         updates = bot.getUpdates(offset=int(config['global']['update_id'])+1, timeout=10)
         if len(updates):
             config['global']['update_id'] = str(updates[-1].update_id)
-            writeconfig(config)
+            writeconfig()
         for update in updates:
             parseUpdate(update)
         yield from asyncio.sleep(5)
@@ -92,11 +87,6 @@ def monitoringloop(reader, writer):
     writer.close()
 
 def main():
-    global config
-    config = configparser.ConfigParser()
-    config['global'] = {'update_id': 0}
-    config['registered'] = {}
-    config.read(['tdfmonitoringbot.ini',])
     global bot 
     bot = telegram.Bot(token=config['global']['token'])
     loop = asyncio.get_event_loop()
