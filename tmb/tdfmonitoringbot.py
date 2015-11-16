@@ -1,6 +1,8 @@
+
 #!/usr/bin/env python3
 import asyncio
 import telegram
+import tmb
 from tmb.config import config, writeconfig
 
 
@@ -62,20 +64,23 @@ class ActiveChat(metaclass=MetaChat):
 
 
 
-def parseUpdate(update):
+def parseUpdate(update, bot):
     a = ActiveChat(update.message.chat.id, bot)
     a.parseMessage(update.message.text)
 
 @asyncio.coroutine
-def botloop():
+def botloop(bot):
     while True:
         updates = bot.getUpdates(offset=int(config['global']['update_id'])+1, timeout=10)
         if len(updates):
             config['global']['update_id'] = str(updates[-1].update_id)
             writeconfig()
         for update in updates:
-            parseUpdate(update)
+            parseUpdate(update, bot)
         yield from asyncio.sleep(5)
+        if tmb._called_from_test:
+            break
+
 
 
 @asyncio.coroutine
@@ -93,7 +98,7 @@ def main():
     coro = asyncio.start_server(monitoringloop, '127.0.0.1', 64321, loop=loop)
     server = loop.run_until_complete(coro)
     try:
-        bot = loop.run_until_complete(botloop())
+        loop.run_until_complete(botloop(bot))
         loop.run_forever()
     except KeyboardInterrupt:
         pass
