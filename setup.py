@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='TMB',
       version='0.1',
@@ -9,5 +9,8 @@ setup(name='TMB',
       author_email='alex@documentfoundation.org',
       url='https://github.com/tdf/tmb',
       packages=['tmb',],
-      install_requires = ['python-telegram-bot',],
+      install_requires=['python-telegram-bot',],
+      entry_points={
+        'console_scripts': ['tmb=tmb.core:main'],
+    }
      )

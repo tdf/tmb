@@ -1,14 +1,16 @@
-
 #!/usr/bin/env python3
 import asyncio
 import telegram
 import tmb
+import tmb.args
 from tmb.config import config, writeconfig
 
 bot = None
 
+
 class MetaChat(type):
     _instances = {}
+
     def __call__(cls, chatid, *args, **kwargs):
         if chatid not in cls._instances:
             instance =  super().__call__(chatid, *args, **kwargs)
@@ -20,6 +22,7 @@ class MetaChat(type):
 class ActiveChat(metaclass=MetaChat):
     password = None
     config = None
+
     def __init__(self, chatid, bot):
         self.chatid = chatid
         self.state = 'start'
@@ -64,10 +67,10 @@ class ActiveChat(metaclass=MetaChat):
             del self
 
 
-
 def parseUpdate(update, bot):
     a = ActiveChat(update.message.chat.id, bot)
     a.parseMessage(update.message.text)
+
 
 @asyncio.coroutine
 def botloop(bot):
@@ -79,9 +82,8 @@ def botloop(bot):
         for update in updates:
             parseUpdate(update, bot)
         yield from asyncio.sleep(5)
-        if tmb._called_from_test:
+        if tmb.called_from_test:
             break
-
 
 
 @asyncio.coroutine
@@ -92,7 +94,10 @@ def monitoringloop(reader, writer):
         bot.sendMessage(key, message)
     writer.close()
 
+
 def main(): # pragma: no cover
+    parser = tmb.args.create_parser()
+    parser.parse_args()
     bot = telegram.Bot(token=config['global']['token'])
     loop = asyncio.get_event_loop()
     coro = asyncio.start_server(monitoringloop, '127.0.0.1', 64321, loop=loop)
@@ -105,6 +110,3 @@ def main(): # pragma: no cover
     server.close()
     loop.run_until_complete(server.wait_closed())
     loop.close()
- 
-if __name__ == '__main__': # pragma: no cover
-    main()
