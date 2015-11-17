@@ -5,6 +5,7 @@ import telegram
 import tmb
 from tmb.config import config, writeconfig
 
+bot = None
 
 class MetaChat(type):
     _instances = {}
@@ -91,8 +92,7 @@ def monitoringloop(reader, writer):
         bot.sendMessage(key, message)
     writer.close()
 
-def main():
-    global bot 
+def main(): # pragma: no cover
     bot = telegram.Bot(token=config['global']['token'])
     loop = asyncio.get_event_loop()
     coro = asyncio.start_server(monitoringloop, '127.0.0.1', 64321, loop=loop)
@@ -106,5 +106,5 @@ def main():
     loop.run_until_complete(server.wait_closed())
     loop.close()
  
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     main()
