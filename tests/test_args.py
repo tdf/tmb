@@ -6,12 +6,9 @@ def test_empty_args(argparser):
 
 
 def test_help_short(argparser):
-    with pytest.raises(SystemExit) as excinfo:
+    with pytest.raises(SystemExit):
         argparser.parse_args(['-h'])
-    assert excinfo.value == 0
-
 
 def test_help_long(argparser):
-    with pytest.raises(SystemExit) as excinfo:
+    with pytest.raises(SystemExit):
         argparser.parse_args(['--help'])
-    assert excinfo.value == 0
