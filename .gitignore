@@ -22,6 +22,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -55,3 +56,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# OSX
+.DS_Store
+
+# Project specific
+tests/tmb.ini
+.idea

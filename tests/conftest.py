@@ -30,7 +30,9 @@ def argparser():
 
 
 def pytest_configure(config):
-    import tmb
+    import tmb, tmb.config, os
+    tmb.config.configfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tmb.ini')
+    tmb.config.readconfig()
     tmb.called_from_test = True
 
 

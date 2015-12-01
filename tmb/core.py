@@ -100,7 +100,7 @@ def main(): # pragma: no cover
     parser.parse_args()
     bot = telegram.Bot(token=config['global']['token'])
     loop = asyncio.get_event_loop()
-    coro = asyncio.start_server(monitoringloop, '127.0.0.1', 64321, loop=loop)
+    coro = asyncio.start_server(monitoringloop, config['global']['host'], config['global']['port'], loop=loop)
     server = loop.run_until_complete(coro)
     try:
         loop.run_until_complete(botloop(bot))

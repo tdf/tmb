@@ -6,5 +6,5 @@ def create_parser():
             prog="tmb",
             description="A monitoring bot for Telegram",
         )
-    parser.add_argument('-c', '--config', default=None, dest="config", help="path to the config file")
+    # parser.add_argument('-c', '--config', default=None, dest="config", help="path to the config file")
     return parser

@@ -1,9 +1,12 @@
 import configparser
 import os
 
-configfile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tdfmonitoringbot.ini')
+configfile = os.path.expanduser('~/.config/tmb/tmb.ini')
 config = configparser.ConfigParser()
-config['global'] = {'update_id': 0}
+config['global'] = {'update_id': '0',
+                    'token': 'invalid',
+                    'host': '127.0.0.1',
+                    'port': '64321'}
 config['registered'] = {}
 
 
@@ -12,6 +15,9 @@ def readconfig():
 
 
 def writeconfig(conf=config):
+    configdir = os.path.dirname(configfile)
+    if not os.path.isdir(configdir):
+        os.makedirs(configdir, exist_ok=True)
     with open(configfile, 'w') as f:
         conf.write(f)
 
