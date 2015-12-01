@@ -5,9 +5,6 @@ import tmb
 import tmb.args
 from tmb.config import config, writeconfig
 
-bot = None
-
-
 class MetaChat(type):
     _instances = {}
 
@@ -92,6 +89,7 @@ def botloop(bot):
 def monitoringloop(reader, writer):
     data = yield from reader.read()
     message = data.decode()
+    bot = telegram.Bot(token=config['global']['token'])
     for key in config['registered']:
         bot.sendMessage(key, message)
     writer.close()
