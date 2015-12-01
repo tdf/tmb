@@ -27,6 +27,8 @@ class ActiveChat(metaclass=MetaChat):
         self.chatid = chatid
         self.state = 'start'
         self.bot = bot
+        if not self.password:
+            self.password = config['global']['password']
 
     def msg(self, msg):
         self.bot.sendMessage(self.chatid, msg)

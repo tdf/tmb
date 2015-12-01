@@ -6,7 +6,8 @@ config = configparser.ConfigParser()
 config['global'] = {'update_id': '0',
                     'token': 'invalid',
                     'host': '127.0.0.1',
-                    'port': '64321'}
+                    'port': '64321',
+                    'password': 'changeme'}
 config['registered'] = {}
 
 
