@@ -4,6 +4,7 @@ import telegram
 import tmb
 import tmb.args
 from tmb.config import config, writeconfig
+from telegram.error import TelegramError
 
 class MetaChat(type):
     _instances = {}
@@ -74,7 +75,11 @@ def parseUpdate(update, bot):
 @asyncio.coroutine
 def botloop(bot):
     while True:
-        updates = bot.getUpdates(offset=int(config['global']['update_id'])+1, timeout=10)
+        try:
+            updates = bot.getUpdates(offset=int(config['global']['update_id'])+1, timeout=10)
+        except TelegramError as e:
+            if "Timed out" in str(error):
+                continue
         if len(updates):
             config['global']['update_id'] = str(updates[-1].update_id)
             writeconfig()
