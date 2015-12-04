@@ -78,7 +78,7 @@ def botloop(bot):
         try:
             updates = bot.getUpdates(offset=int(config['global']['update_id'])+1, timeout=10)
         except TelegramError as e:
-            if "Timed out" in str(error):
+            if "Timed out" in str(e):
                 continue
         if len(updates):
             config['global']['update_id'] = str(updates[-1].update_id)
